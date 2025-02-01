@@ -28,7 +28,7 @@ async function run() {
     // await client.connect();
 
     app.get('/ping', (req, res) => {
-      res.send({ message: `Your Server Is Running Port On: ${port}`, "version:" : "v1"});
+      res.send({ message: `Your Server Is Running Port On: ${port}`, "version:": "v1" });
     })
 
 
@@ -37,9 +37,18 @@ async function run() {
 
     // user data save 
     app.post('/user-register', async (req, res) => {
-      const result = userCollection.insertOne(req.body);
-      res.status(200).send({message: 'Account created!" 🚀',})
-    })
+      const userInfo = req.body;
+      try {
+        const isExists = await userCollection.findOne({ email: userInfo?.email });
+        if (isExists) {
+          return res.send({ message: 'Account is exists', data: isExists })
+        }
+        const result = await userCollection.insertOne(userInfo);
+        res.send({ message: "Account created! 🚀", data: result })
+      } catch (error) {
+        res.status(500).send({ message: "Internal Server Error", error: error.message });
+      }
+    });
 
 
 
