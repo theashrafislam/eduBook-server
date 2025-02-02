@@ -31,7 +31,7 @@ async function run() {
       res.send({ message: `Your Server Is Running Port On: ${port}`, "version:": "v1" });
     })
 
-
+    //all collections
     const userCollection = client.db('eduBook').collection('users');
     const collegeCollection = client.db('eduBook').collection('collage');
     const admissionCollection = client.db('eduBook').collection('admissionBook');
