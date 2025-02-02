@@ -5,9 +5,10 @@ require('dotenv').config()
 const port = process.env.POST || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://edu-book-frontend.vercel.app', 'https://inquisitive-granita-77c18a.netlify.app']
-}))
+app.use(cors())
+// {
+//   origin: ['http://localhost:5173', 'https://edu-book-frontend.vercel.app', 'https://inquisitive-granita-77c18a.netlify.app']
+// }
 app.use(express.json())
 
 
