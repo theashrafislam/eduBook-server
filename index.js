@@ -50,6 +50,38 @@ async function run() {
       }
     });
 
+    // get sigle user data
+    app.get(`/profile/:email`, async (req, res) => {
+      const email = req.params.email;
+      try {
+        const user = await userCollection.findOne({ email });
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+        res.send(user)
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+    //update user information
+    app.patch(`/profile-update/:email`, async (req, res) => {
+      const email = req.params.email;
+      const updatedData = req.body;
+      try {
+        const isExists = await userCollection.findOne({ email });
+        if (isExists) {
+          const result = await userCollection.updateOne(
+            { email },
+            { $set: updatedData }
+          );
+          res.send({message: 'Update Successfully', data: result});
+        }
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    })
+
 
 
     // Send a ping to confirm a successful connection
