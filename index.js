@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const port = process.env.POST || 3000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors({
   origin: 'http://localhost:5173'
@@ -33,6 +33,8 @@ async function run() {
 
 
     const userCollection = client.db('eduBook').collection('users');
+    const collegeCollection = client.db('eduBook').collection('collage');
+    const admissionCollection = client.db('eduBook').collection('admissionBook');
 
 
     // user data save 
@@ -75,12 +77,80 @@ async function run() {
             { email },
             { $set: updatedData }
           );
-          res.send({message: 'Update Successfully', data: result});
+          res.send({ message: 'Update Successfully', data: result });
         }
       } catch (error) {
         res.status(500).send({ message: "Internal server error" });
       }
     })
+
+    //get collage all data form database
+    app.get('/college-collection', async (req, res) => {
+      const searchQuery = req.query.search || '';
+      try {
+        const result = await collegeCollection.find({
+          name: { $regex: searchQuery, $options: 'i' }
+        }).toArray();
+        res.send({ message: 'College collection data retrieved successfully', data: result });
+      } catch (error) {
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    //get college sigle data useing id form database
+    app.get(`/college-collection/:id`, async (req, res) => {
+      const id = req.params.id;
+      try {
+        const result = await collegeCollection.findOne({ _id: new ObjectId(id) });
+        res.send({ message: 'Single Data Get Successfully.', data: result })
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    })
+
+    //post admission book data
+    app.post(`/admission-book`, async (req, res) => {
+      const updateData = req.body;
+      try {
+        const result = await admissionCollection.insertOne(updateData);
+        res.send({ message: 'admission data saved done', data: result })
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    })
+
+    //get admission data useing email form database
+    app.get('/admission-book/:email', async (req, res) => {
+      const email = req.params.email;
+      try {
+        const cursor = admissionCollection.find(
+          { userEmail: email },
+          { projection: { collageId: 1, _id: 0 } }
+        );
+        const results = await cursor.toArray();
+        const collageIds = results.map(doc => doc.collageId);
+        res.send(collageIds);
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+    //get collage data useing array form database
+    // app.get('/collage-collection-array', async (req, res) => {
+    //   const collageIds = [].concat(req.query.collageId || []);
+    //   console.log(collageIds);
+    //   const objectIds = collageIds.map(id => new ObjectId(id));
+    //   try {
+    //     const result = await collegeCollection.find({ _id: { $in: objectIds } }).toArray();
+    //     res.send({ message: 'collage data get', data: result });
+    //   } catch (error) {
+    //     res.status(500).send({ message: "Internal server error" });
+    //   }
+    // })
+
+
+    //patch rating update api
+    
 
 
 
