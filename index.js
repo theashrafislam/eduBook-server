@@ -135,22 +135,21 @@ async function run() {
       }
     });
 
-    //get collage data useing array form database
-    // app.get('/collage-collection-array', async (req, res) => {
-    //   const collageIds = [].concat(req.query.collageId || []);
-    //   console.log(collageIds);
-    //   const objectIds = collageIds.map(id => new ObjectId(id));
-    //   try {
-    //     const result = await collegeCollection.find({ _id: { $in: objectIds } }).toArray();
-    //     res.send({ message: 'collage data get', data: result });
-    //   } catch (error) {
-    //     res.status(500).send({ message: "Internal server error" });
-    //   }
-    // })
-
 
     //patch rating update api
-    
+    app.patch('/rating-update', async (req, res) => {
+      const { id, rating } = req.body;
+      try {
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+          $set: { rating: rating }
+        };
+        const result = await collegeCollection.updateOne(filter, updateDoc);
+        res.send({ success: true, message: "Rating updated successfully", data: result });
+      } catch (error) {
+        res.status(500).send({ message: "Internal server error" });
+      }
+    })
 
 
 
