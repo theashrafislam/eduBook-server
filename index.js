@@ -6,7 +6,7 @@ const port = process.env.POST || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: ['http://localhost:5173', 'https://edu-book-frontend.vercel.app']
 }))
 app.use(express.json())
 
